@@ -77,6 +77,7 @@ All modules are **real**, not just wrappers. Each has logic, payload sets, and a
 
 ```bash
 pip3 install -r requirements.txt
+...
 
 2. Install tools like curl, ffuf, etc.
 python3 tool_installer.py
