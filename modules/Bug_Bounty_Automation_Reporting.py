@@ -13,19 +13,20 @@ import numpy as np
 import pandas as pd
 from colorama import Fore, Style, init
 
+try:
+    from modules.common_utils import configure_logging, init_colorama
+except ImportError:
+    from common_utils import configure_logging, init_colorama
+
 # Initialize colorama for cross-platform colored terminal output
-init()
+init_colorama()
 
 # Enhanced Logging Configuration
-logging.basicConfig(
+logger = configure_logging(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("bug_bounty.log"),
-        logging.StreamHandler()
-    ]
+    log_file="bug_bounty.log",
+    logger_name="bug_bounty_ai",
 )
-logger = logging.getLogger("bug_bounty_ai")
 
 # Get the absolute base directory (parent of "modules" folder)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

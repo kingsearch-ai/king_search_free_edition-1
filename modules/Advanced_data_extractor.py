@@ -36,6 +36,11 @@ from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import cpu_count
 from html import escape
 
+try:
+    from modules.common_utils import configure_logging
+except ImportError:
+    from common_utils import configure_logging
+
 class DataExtractor:
     def __init__(self, config_path: str = 'config.yaml'):
         """
@@ -180,14 +185,11 @@ class DataExtractor:
         """
         log_directory = self.config.get('log_directory', 'Reports/Logs')
         os.makedirs(log_directory, exist_ok=True)
-        
-        logging.basicConfig(
+
+        configure_logging(
             level=logging.DEBUG,
-            format='%(asctime)s - %(levelname)s: %(message)s',
-            handlers=[
-                logging.FileHandler(f"{log_directory}/data_extractor.log"),
-                logging.StreamHandler()
-            ]
+            log_file=f"{log_directory}/data_extractor.log",
+            fmt='%(asctime)s - %(levelname)s: %(message)s',
         )
 
     def _risk_classification(self, data_type: str) -> str:

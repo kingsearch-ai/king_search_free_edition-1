@@ -32,31 +32,13 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 warnings.filterwarnings("ignore", category=UserWarning, module="bs4")
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
-# Configure logging with color support
-class ColoredFormatter(logging.Formatter):
-    """Colored formatter for better visual feedback"""
-    COLORS = {
-        'DEBUG': '\033[94m',    # Blue
-        'INFO': '\033[92m',     # Green
-        'WARNING': '\033[93m',  # Yellow
-        'ERROR': '\033[91m',    # Red
-        'CRITICAL': '\033[91m\033[1m',  # Bold Red
-        'ENDC': '\033[0m',      # Reset
-    }
-
-    def format(self, record):
-        levelname = record.levelname
-        if levelname in self.COLORS:
-            record.levelname = f"{self.COLORS[levelname]}{levelname}{self.COLORS['ENDC']}"
-        return super().format(record)
+try:
+    from modules.common_utils import DEFAULT_USER_AGENT, setup_colored_logging
+except ImportError:
+    from common_utils import DEFAULT_USER_AGENT, setup_colored_logging
 
 # Setup colored logging
-handler = logging.StreamHandler()
-handler.setFormatter(ColoredFormatter("%(asctime)s - %(levelname)s - %(message)s", 
-                                     datefmt="%Y-%m-%d %H:%M:%S"))
-logger = logging.getLogger()
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+logger = setup_colored_logging(level=logging.INFO)
 
 # Enhanced URL Categorization Patterns
 CATEGORY_PATTERNS = {
@@ -628,7 +610,7 @@ async def check_urls_status_batch(urls, batch_size=300, max_connections=300):
     
     # Headers to mimic browser request
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'User-Agent': DEFAULT_USER_AGENT,
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
     }

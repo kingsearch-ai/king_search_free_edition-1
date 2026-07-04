@@ -18,6 +18,11 @@ import sys
 import urllib.parse
 from typing import Dict, List, Any
 
+try:
+    from modules.common_utils import load_lines
+except ImportError:
+    from common_utils import load_lines
+
 def parse_user_id_from_url(url: str) -> str:
     """
     Attempts to extract user IDs from URLs using common patterns
@@ -81,8 +86,7 @@ def parse_urls_file(file_path: str) -> List[str]:
     """
     Parse file containing URLs, one per line
     """
-    with open(file_path, 'r') as f:
-        return [line.strip() for line in f if line.strip()]
+    return load_lines(file_path)
 
 def generate_config_from_creds(creds_data: Dict[str, Any], output_file: str):
     """

@@ -18,6 +18,11 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
+try:
+    from modules.common_utils import configure_logging, disable_ssl_warnings, get_random_user_agent
+except ImportError:
+    from common_utils import configure_logging, disable_ssl_warnings, get_random_user_agent
+
 # Enhanced security and authentication libraries
 import jwt
 import hashlib
@@ -57,17 +62,14 @@ import difflib
 import Levenshtein
 
 # Configure logging
-logging.basicConfig(
+configure_logging(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("login_analysis.log"),
-        logging.StreamHandler()
-    ]
+    log_file="login_analysis.log",
+    fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
 )
 
 # Suppress insecure request warnings
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+disable_ssl_warnings()
 
 class LoginAnalyzer:
     def __init__(self, target_url, threads=5, timeout=10, user_agent=None, proxy=None):
@@ -80,12 +82,7 @@ class LoginAnalyzer:
         if user_agent:
             self.user_agent = user_agent
         else:
-            user_agents = [
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15",
-                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"
-            ]
-            self.user_agent = random.choice(user_agents)
+            self.user_agent = get_random_user_agent()
         
         self.session.headers.update({"User-Agent": self.user_agent})
         

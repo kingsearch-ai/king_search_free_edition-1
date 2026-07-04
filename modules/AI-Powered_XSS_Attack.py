@@ -16,14 +16,13 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
+try:
+    from modules.common_utils import configure_logging, get_random_user_agent
+except ImportError:
+    from common_utils import configure_logging, get_random_user_agent
+
 # === Configuration ===
 API_KEY = ""
-
-USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-    "Mozilla/5.0 (X11; Ubuntu; Linux x86_64)"
-]
 
 PROXIES = {
     "http": "http://your-proxy.com:8080",
@@ -31,7 +30,7 @@ PROXIES = {
 }
 
 # === Logging Setup ===
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+configure_logging(level=logging.INFO)
 
 # === Initialize OpenAI ===
 client = OpenAI(api_key=API_KEY)
@@ -63,7 +62,7 @@ def get_driver():
 
 # === Fetch URL with Random User-Agent & Proxy ===
 def fetch_url(target_url):
-    headers = {"User-Agent": random.choice(USER_AGENTS)}
+    headers = {"User-Agent": get_random_user_agent()}
     try:
         response = requests.get(target_url, headers=headers, proxies=PROXIES, timeout=10)
         return response.text

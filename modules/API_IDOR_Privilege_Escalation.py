@@ -37,19 +37,24 @@ from pathlib import Path
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from colorama import Fore, Style, init
 
+try:
+    from modules.common_utils import configure_logging, disable_ssl_warnings, init_colorama
+except ImportError:
+    from common_utils import configure_logging, disable_ssl_warnings, init_colorama
+
 # Initialize colorama
-init(autoreset=True)
+init_colorama(autoreset=True)
 
 # Suppress insecure request warnings
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+disable_ssl_warnings()
 
 # Set up logging
-logging.basicConfig(
+logger = configure_logging(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
+    fmt='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    logger_name=__name__,
 )
-logger = logging.getLogger(__name__)
 
 @dataclass
 class IDORTest:
