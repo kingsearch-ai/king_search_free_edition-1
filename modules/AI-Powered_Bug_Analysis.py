@@ -20,6 +20,7 @@ import sys
 import argparse
 import re
 import json
+import html
 from collections import defaultdict, Counter
 import datetime
 import random
@@ -490,21 +491,22 @@ class BugAnalyzer:
             
             html_content += f'''
                 <div class="bug-card {risk_class}">
-                    <h3>{bug['id']}: {bug['title']}</h3>
+                    <h3>{html.escape(str(bug['id']))}: {html.escape(str(bug['title']))}</h3>
                     <p>Risk Score: <strong>{bug_info['risk_score']:.2f}</strong></p>
-                    <p>Severity: {bug['severity']}</p>
-                    <p>Source: {bug['source_file']}</p>
-                    <p>Cluster: {bug['cluster']}</p>
+                    <p>Severity: {html.escape(str(bug['severity']))}</p>
+                    <p>Source: {html.escape(str(bug['source_file']))}</p>
+                    <p>Cluster: {html.escape(str(bug['cluster']))}</p>
             '''
             
             if bug['description']:
-                desc = bug['description']
-                html_content += f'<p>Description: {desc[:200]}{"..." if len(desc) > 200 else ""}</p>'
+                desc = str(bug['description'])
+                truncated = f'{desc[:200]}{"..." if len(desc) > 200 else ""}'
+                html_content += f'<p>Description: {html.escape(truncated)}</p>'
                 
             html_content += '<h4>Similar Bugs:</h4>'
             
             for similar in bug_info['similar_bugs'][:5]:  # Top 5 similar
-                html_content += f'<div class="similar-bug">{similar["id"]}: {similar["title"]}</div>'
+                html_content += f'<div class="similar-bug">{html.escape(str(similar["id"]))}: {html.escape(str(similar["title"]))}</div>'
                 
             html_content += '</div>'
             

@@ -12,6 +12,7 @@ import random
 import os
 import sys
 import logging
+import html
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse, parse_qs, urljoin
 from bs4 import BeautifulSoup
@@ -326,7 +327,7 @@ class LoginAnalyzer:
         </head>
         <body>
             <h1>Login Form Analysis Report</h1>
-            <p>Target URL: {self.target_url}</p>
+            <p>Target URL: {html.escape(self.target_url)}</p>
             <p>Analysis Date: {time.strftime('%Y-%m-%d %H:%M:%S')}</p>
             
             <h2>Discovered Login Forms ({len(self.discovered_forms)})</h2>
@@ -342,9 +343,9 @@ class LoginAnalyzer:
             input_fields = ", ".join([f"{inp['name']} ({inp['type']})" for inp in form['inputs']])
             html_content += f"""
                 <tr>
-                    <td>{form['action']}</td>
-                    <td>{form['method']}</td>
-                    <td>{input_fields}</td>
+                    <td>{html.escape(form['action'])}</td>
+                    <td>{html.escape(form['method'])}</td>
+                    <td>{html.escape(input_fields)}</td>
                 </tr>
             """
         
@@ -364,11 +365,11 @@ class LoginAnalyzer:
         for vuln in self.vulnerabilities:
             severity_class = vuln['severity'].lower()
             html_content += f"""
-                <tr class="{severity_class}">
-                    <td>{vuln['form_action']}</td>
-                    <td>{vuln['type']}</td>
-                    <td>{vuln['description']}</td>
-                    <td>{vuln['severity']}</td>
+                <tr class="{html.escape(severity_class)}">
+                    <td>{html.escape(vuln['form_action'])}</td>
+                    <td>{html.escape(vuln['type'])}</td>
+                    <td>{html.escape(vuln['description'])}</td>
+                    <td>{html.escape(vuln['severity'])}</td>
                 </tr>
             """
         
