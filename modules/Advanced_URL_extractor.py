@@ -856,7 +856,7 @@ def generate_html_report(valid_urls, file_path, domain=None):
 
     <div class="filters">
         <div class="filter active" onclick="filterCategory('all')">All</div>
-        {''.join(f'<div class="filter" onclick="filterCategory(&quot;{category}&quot;)">{category}</div>' for category in sorted(categorized_urls.keys()))}
+        {''.join(f'<div class="filter" onclick="filterCategory(&quot;{html.escape(category, quote=True)}&quot;)">{html.escape(category)}</div>' for category in sorted(categorized_urls.keys()))}
     </div>
 
     <div class="stats">
@@ -874,12 +874,17 @@ def generate_html_report(valid_urls, file_path, domain=None):
         # Write categorized URLs
         for category, urls in sorted(categorized_urls.items()):
             f.write(f'''
-    <div class="category" data-category="{category}">
-        <h2>{category} ({len(urls)})</h2>
+    <div class="category" data-category="{html.escape(category, quote=True)}">
+        <h2>{html.escape(category)} ({len(urls)})</h2>
         <ul class="url-list">
 ''')
             for url in sorted(urls):
-                f.write(f'            <li><a href="{url}" target="_blank">{url}</a></li>\n')
+                safe_text = html.escape(url)
+                if url.lower().startswith(('http://', 'https://')):
+                    safe_href = html.escape(url, quote=True)
+                    f.write(f'            <li><a href="{safe_href}" target="_blank" rel="noopener noreferrer">{safe_text}</a></li>\n')
+                else:
+                    f.write(f'            <li>{safe_text}</li>\n')
             f.write('        </ul>\n    </div>\n')
 
         # Add JavaScript for filtering - Escape the $ in template literals with \\$

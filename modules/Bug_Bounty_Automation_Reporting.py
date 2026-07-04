@@ -429,11 +429,11 @@ def generate_bug_bounty_report(all_extracted_data):
         
         for vuln in all_vulnerabilities:
             # Display full value without truncation
-            vulnerability_table += f"""<tr class='severity-{vuln["severity"].lower()}'>
-                <td>{vuln["type"]}</td>
-                <td>{vuln["domain"]}</td>
-                <td>{vuln["severity"]}</td>
-                <td>{vuln["confidence"]}%</td>
+            vulnerability_table += f"""<tr class='severity-{html.escape(vuln["severity"].lower())}'>
+                <td>{html.escape(str(vuln["type"]))}</td>
+                <td>{html.escape(str(vuln["domain"]))}</td>
+                <td>{html.escape(str(vuln["severity"]))}</td>
+                <td>{html.escape(str(vuln["confidence"]))}%</td>
                 <td><div class='vuln-detail full-content'>{html.escape(str(vuln["value"]))}</div></td>
             </tr>"""
         
@@ -457,12 +457,12 @@ def generate_bug_bounty_report(all_extracted_data):
                 
                 # Create detailed findings by type - Show all instances, not limited to 5
                 for vuln_type, type_vulns in vulns_by_type.items():
-                    findings_by_severity += f"<li><strong>{vuln_type}</strong> ({len(type_vulns)} instances)<ul>"
+                    findings_by_severity += f"<li><strong>{html.escape(str(vuln_type))}</strong> ({len(type_vulns)} instances)<ul>"
                     
                     # Show ALL instances, not just the first 5
                     for vuln in type_vulns:
                         findings_by_severity += f"""<li>
-                            <span class='domain-tag'>{vuln['domain']}</span>
+                            <span class='domain-tag'>{html.escape(str(vuln['domain']))}</span>
                             <div class='full-vulnerability-content'>{html.escape(str(vuln['value']))}</div>
                         </li>"""
                     

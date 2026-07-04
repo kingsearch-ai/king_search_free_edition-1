@@ -29,6 +29,7 @@ import re
 import sys
 import copy
 import base64
+import html
 from urllib.parse import urlparse, parse_qs, urlencode
 from dataclasses import dataclass, field, asdict
 from typing import List, Dict, Any, Optional, Set, Tuple, Union
@@ -340,7 +341,7 @@ class IDORTester:
         vulnerable_count = sum(1 for r in self.results if r.vulnerable)
         total_count = len(self.results)
         
-        html = f"""
+        html_content = f"""
         <!DOCTYPE html>
         <html>
         <head>
@@ -387,30 +388,30 @@ class IDORTester:
         """
         
         for r in self.results:
-            html += f"""
+            html_content += f"""
                 <tr class="{'vulnerable-row' if r.vulnerable else ''}">
-                    <td>{r.test.endpoint}</td>
-                    <td>{r.test.method}</td>
-                    <td>{r.test.original_id}</td>
-                    <td>{r.test.target_id}</td>
+                    <td>{html.escape(str(r.test.endpoint))}</td>
+                    <td>{html.escape(str(r.test.method))}</td>
+                    <td>{html.escape(str(r.test.original_id))}</td>
+                    <td>{html.escape(str(r.test.target_id))}</td>
                     <td class="{'fail' if r.vulnerable else 'success'}">{
                         'VULNERABLE' if r.vulnerable else 'SECURE'
                     }</td>
-                    <td>{r.status_code}</td>
+                    <td>{html.escape(str(r.status_code))}</td>
                     <td>{r.response_time:.2f}s</td>
-                    <td>{r.response_length}</td>
-                    <td>{r.evidence}</td>
+                    <td>{html.escape(str(r.response_length))}</td>
+                    <td>{html.escape(str(r.evidence))}</td>
                 </tr>
             """
         
-        html += """
+        html_content += """
             </table>
         </body>
         </html>
         """
         
         with open(self.output_path, 'w') as f:
-            f.write(html)
+            f.write(html_content)
 
     def _print_summary(self):
         """Print summary of test results"""
