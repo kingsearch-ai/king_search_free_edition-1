@@ -322,7 +322,8 @@ def extract_urls_from_html(file_path):
         # Parse with BeautifulSoup, using a faster parser when available
         try:
             soup = BeautifulSoup(content, "lxml")
-        except:
+        except Exception as e:
+            logging.debug(f"lxml parser unavailable for {file_path}, falling back to html.parser: {str(e)}")
             soup = BeautifulSoup(content, "html.parser")
             
         # Extract base URL if present
@@ -523,7 +524,8 @@ def filter_urls_by_domain(urls, domain=None):
             url_domain = get_domain(url).lower()
             if domain in url_domain:
                 filtered_urls.append(url)
-        except:
+        except Exception as e:
+            logging.debug(f"Skipping URL during domain filtering {url}: {str(e)}")
             continue
             
     logging.info(f"Filtered {len(filtered_urls)} URLs for domain: {domain}")
@@ -562,7 +564,8 @@ def filter_unique_domain_urls(urls):
             if domain and domain not in domains_seen:
                 domains_seen.add(domain)
                 unique_urls.append(url)
-        except:
+        except Exception as e:
+            logging.debug(f"Skipping URL during unique-domain filtering {url}: {str(e)}")
             continue
             
     return unique_urls
@@ -602,6 +605,7 @@ async def check_url_status_async(url, session, timeout=15):
     except asyncio.TimeoutError:
         return url, "Timeout"
     except Exception as e:
+        logging.debug(f"Error checking status for {url}: {str(e)}")
         return url, "Failed"
 
 async def check_urls_status_batch(urls, batch_size=300, max_connections=300):
